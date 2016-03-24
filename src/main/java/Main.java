@@ -2,8 +2,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class Main {
 
@@ -11,11 +10,12 @@ public class Main {
 
         Connection connect = new DbConnector().getConnection();
 
-        long total = 8700700;
+        long total = 8700;
         long done = 0,count =0;
         double progress = 0;
         Statement stmnt = null;
         ResultSet rs = null;
+        String query = "select message from mysql.chat_message LIMIT ";
 
         //total = DbConnector.getCount(connect);
         System.out.println("Total messages: " + total);
@@ -25,7 +25,10 @@ public class Main {
         while(progress<100){
             try{
                 stmnt = connect.createStatement();
-                rs = stmnt.executeQuery("select message from mysql.chat_message LIMIT 0, 1000");
+                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(done+1000));
+                while (rs.next()){
+
+                }
             }catch (SQLException ex){
                 System.out.println("SQLException in \"while\" cycle: " + ex);
             }
@@ -35,6 +38,7 @@ public class Main {
         }
         System.out.println("100% - Done!");
         System.out.println("Total count = " + count);
+
     }
 
 }
