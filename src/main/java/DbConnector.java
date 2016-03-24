@@ -1,6 +1,4 @@
 import java.sql.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class DbConnector {
 
@@ -30,20 +28,25 @@ class DbConnector {
         return conn;
     }
 
-    ResultSet getData(Connection connect, String query){
+    static int getCount(Connection connect){
 
         Statement stmnt = null;
+        int count = 0;
 
         try{
 
             stmnt = connect.createStatement();
-            ResultSet rs = stmnt.executeQuery(query);
-            return rs;
+            System.out.println("Executing query...");
+            ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
+            System.out.println("Success!");
+            if(rs.next()){
+                count = rs.getInt("count(message)");
+            }
 
         }catch(SQLException e){
             System.out.println("SQLException: " + e.getMessage());
         }
-        return null;
+        return count;
     }
 
 }
