@@ -10,9 +10,9 @@ public class Main {
 
         Connection connect = new DbConnector().getConnection();
 
-        long done = 0,count =0,total = 100000;
+        long done = 0,count = 0,total = 400;
         double progress = 0, step = 0;
-        int rows = 1000;                        // the number of rows in the query
+        int rows = 100;                        // the number of rows in the query
         Statement stmnt = null;
         ResultSet rs = null;
         String query = "select message from mysql.chat_message LIMIT ";
