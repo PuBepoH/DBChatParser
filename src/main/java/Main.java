@@ -9,12 +9,11 @@ public class Main {
     public static void main(String[] args){
 
         Connection connect = new DbConnector().getConnection();
-
-        long done = 0,count = 0,total = 400;
+        long done = 0,count = 0,total = 100;
         double progress = 0, step = 0;
-        int rows = 100;                        // the number of rows in the query
+        int rows = 10;                        // the number of rows in the query
         Statement stmnt = null;
-        ResultSet rs = null;
+        ResultSet rs;
         String query = "select message from mysql.chat_message LIMIT ";
 
         //total = DbConnector.getCount(connect);
@@ -34,9 +33,10 @@ public class Main {
 
         while(progress<100){
             try{
-                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(done+rows));
+                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(rows));
                 while (rs.next()){
                     count+=m.getCount(rs);
+                    System.out.println("Total peka = " + count);
                 }
 
             }catch (SQLException ex){

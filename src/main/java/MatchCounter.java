@@ -20,10 +20,9 @@ class MatchCounter {
                 message = rs.getString("message");
                 m = r.matcher(message);
             //    System.out.println(message);
-
                 while (m.find()){
                     count++;
-                    System.out.println(message + " - match! " + count);
+            //        System.out.println(message + "match! " + count);
                 }
             }
         }catch (SQLException ex){
