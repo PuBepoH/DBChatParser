@@ -1,10 +1,10 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class DbConnector {
 
-    static void getConnection() {
+    Connection getConnection() {
 
         String url = "jdbc:mysql://localhost:3306/mysql";
         String user = "root";
@@ -27,7 +27,23 @@ class DbConnector {
             System.out.println("VendorError: " + ex.getErrorCode());
 
         }
+        return conn;
+    }
 
+    ResultSet getData(Connection connect, String query){
+
+        Statement stmnt = null;
+
+        try{
+
+            stmnt = connect.createStatement();
+            ResultSet rs = stmnt.executeQuery(query);
+            return rs;
+
+        }catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+        }
+        return null;
     }
 
 }
