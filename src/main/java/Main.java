@@ -10,9 +10,9 @@ public class Main {
 
         Connection connect = new DbConnector().getConnection();
 
-        long total = 10000;
-        long done = 0,count =0;
-        double progress = 0;
+        long done = 0,count =0,total = 100000;
+        double progress = 0, step = 0;
+        int rows = 1000;                        // the number of rows in the query
         Statement stmnt = null;
         ResultSet rs = null;
         String query = "select message from mysql.chat_message LIMIT ";
@@ -24,19 +24,33 @@ public class Main {
 
         MatchCounter m = new MatchCounter();
 
+        step = (double)rows/total*100;
+
+        try {
+            stmnt = connect.createStatement();
+        }catch (SQLException ex){
+            System.out.println("SQLException in connect.createStatement(): " + ex);
+        }
+
         while(progress<100){
             try{
-                stmnt = connect.createStatement();
-                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(done+1000));
+                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(done+rows));
                 while (rs.next()){
                     count+=m.getCount(rs);
                 }
+
             }catch (SQLException ex){
                 System.out.println("SQLException in \"while\" cycle: " + ex);
             }
-            done += 1000;
-            progress = (double)done/total*100;
+            done += rows;
+            progress += step;
             if (progress<100) System.out.println(String.format("%.1f",progress) + "%");
+        }
+
+        try{
+            stmnt.close();
+        }catch (SQLException ex){
+            System.out.println("SQLException in closing statement: ");
         }
         System.out.println("100% - Done!");
         System.out.println("Total count = " + count);

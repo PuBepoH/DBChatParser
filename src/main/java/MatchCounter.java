@@ -10,11 +10,12 @@ public class MatchCounter {
         int count = 0;
         String regex = ".*:peka:.*",message;
         Pattern r = Pattern.compile(regex);
+        Matcher m;
 
         try{
             while (rs.next()){
                 message = rs.getString("message");
-                Matcher m = r.matcher(message);
+                m = r.matcher(message);
 
                 while (m.find()){
                     count++;
