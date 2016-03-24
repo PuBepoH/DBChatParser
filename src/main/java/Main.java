@@ -9,9 +9,9 @@ public class Main {
     public static void main(String[] args){
 
         Connection connect = new DbConnector().getConnection();
-        long done = 0,count = 0,total = 100;
+        long done = 0,count = 0,total = 100000;
         double progress = 0, step = 0;
-        int rows = 10;                        // the number of rows in the query
+        int rows = 10000;                        // the number of rows in the query
         Statement stmnt = null;
         ResultSet rs;
         String query = "select message from mysql.chat_message LIMIT ";
@@ -33,10 +33,13 @@ public class Main {
 
         while(progress<100){
             try{
+ //               System.out.println("---------------------------------------------------");
+ //               System.out.println("FROM " + done + " TO " + (done+rows));
+ //               System.out.println("QUERY = " + query + String.valueOf(done) + "," + String.valueOf(rows));
+ //               System.out.println("---------------------------------------------------");
                 rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(rows));
                 while (rs.next()){
                     count+=m.getCount(rs);
-                    System.out.println("Total peka = " + count);
                 }
 
             }catch (SQLException ex){

@@ -16,15 +16,14 @@ class MatchCounter {
         count = 0;
 
         try{
-            while (rs.next()){
+            do{
                 message = rs.getString("message");
                 m = r.matcher(message);
-            //    System.out.println(message);
                 while (m.find()){
                     count++;
             //        System.out.println(message + "match! " + count);
                 }
-            }
+            }while (rs.next());
         }catch (SQLException ex){
             System.out.println("SQLException in MatchCounter: " + ex.getMessage());
         }
