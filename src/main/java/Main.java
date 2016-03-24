@@ -10,7 +10,7 @@ public class Main {
 
         Connection connect = new DbConnector().getConnection();
 
-        long total = 8700;
+        long total = 10000;
         long done = 0,count =0;
         double progress = 0;
         Statement stmnt = null;
@@ -22,12 +22,14 @@ public class Main {
 
         System.out.println("Progress:");
 
+        MatchCounter m = new MatchCounter();
+
         while(progress<100){
             try{
                 stmnt = connect.createStatement();
                 rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(done+1000));
                 while (rs.next()){
-
+                    count+=m.getCount(rs);
                 }
             }catch (SQLException ex){
                 System.out.println("SQLException in \"while\" cycle: " + ex);
