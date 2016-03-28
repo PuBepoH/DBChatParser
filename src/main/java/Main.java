@@ -1,62 +1,19 @@
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 
 public class Main {
 
     public static void main(String[] args){
 
-        Connection connect = new DbConnector().getConnection();
-        long done = 0,count = 0,total;
-        double progress = 0, step = 0;
-        int rows = 100000;                        // the number of rows in the query
-        Statement stmnt = null;
-        ResultSet rs;
-        String query = "select message from mysql.chat_message LIMIT ";
+        DbConnector connect = new DbConnector();
 
-        total = DbConnector.getCount(connect);
-        System.out.println("Total messages: " + total);
+        connect.makeConnection();
 
-        System.out.println("Progress:");
+        Logic myLogic = new Logic();
 
-        MatchCounter m = new MatchCounter();
+        myLogic.countAllMatches(connect.getStmnt());
 
-        step = (double)rows/total*100;
-
-        try {
-            stmnt = connect.createStatement();
-        }catch (SQLException ex){
-            System.out.println("SQLException in connect.createStatement(): " + ex);
-        }
-
-        while(progress<100){
-            try{
- //               System.out.println("---------------------------------------------------");
- //               System.out.println("FROM " + done + " TO " + (done+rows));
- //               System.out.println("QUERY = " + query + String.valueOf(done) + "," + String.valueOf(rows));
- //               System.out.println("---------------------------------------------------");
-                rs = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(rows));
-                while (rs.next()){
-                    count+=m.getCount(rs);
-                }
-
-            }catch (SQLException ex){
-                System.out.println("SQLException in \"while\" cycle: " + ex);
-            }
-            done += rows;
-            progress += step;
-            if (progress<100) System.out.println(String.format("%.1f",progress) + "%");
-        }
-
-        try{
-            stmnt.close();
-        }catch (SQLException ex){
-            System.out.println("SQLException in closing statement: ");
-        }
         System.out.println("100% - Done!");
-        System.out.println("Total count = " + count);
+        System.out.println("Total match count = " + myLogic.getMatch());
 
     }
 

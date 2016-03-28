@@ -1,14 +1,13 @@
 import java.sql.*;
 
-class DbConnector {
+public class DbConnector {
 
-    Connection getConnection() {
+    private Statement stmnt = null;
+    private static final String url = "jdbc:mysql://localhost:3306/mysql", user = "root", password = "root";
+    private Connection conn = null;
+    int totalRows = 0;
 
-        String url = "jdbc:mysql://localhost:3306/mysql";
-        String user = "root";
-        String password = "root";
-
-        Connection conn = null;
+    public void makeConnection() {
 
         System.out.println("Connecting to database...");
 
@@ -25,13 +24,17 @@ class DbConnector {
             System.out.println("VendorError: " + ex.getErrorCode());
 
         }
-        return conn;
+
+        try{
+            stmnt = conn.createStatement();
+        }catch (SQLException ex){
+            System.out.println("SQLException in making statement: " + ex);
+        }
+
+
     }
 
-    static int getCount(Connection connect){
-
-        Statement stmnt = null;
-        int count = 0;
+    public void makeTotalRows(Connection connect){
 
         try{
 
@@ -40,13 +43,22 @@ class DbConnector {
             ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
             System.out.println("Success!");
             if(rs.next()){
-                count = rs.getInt("count(message)");
+                totalRows = rs.getInt("count(message)");
             }
+            System.out.println("Total rows: " + totalRows);
 
         }catch(SQLException e){
             System.out.println("SQLException: " + e.getMessage());
         }
-        return count;
+
+    }
+
+    public Statement getStmnt(){
+        return stmnt;
+    }
+
+    public int getTotalRows(){
+        return totalRows;
     }
 
 }
