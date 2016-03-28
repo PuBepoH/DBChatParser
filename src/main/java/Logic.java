@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -7,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class Logic {
 
-    private int total = 0, done = 0, match = 0, numberOfLines = 10000;
+    private int totalRows = 0, done = 0, match = 0, rowsPerQuery = 10000;
     private String regex = ".*:peka:.*";
     private String message;
     private final String query = "select message from mysql.chat_message LIMIT ";
@@ -15,13 +14,30 @@ public class Logic {
     private Matcher matcher;
     private ResultSet resultSet;
 
+    public void getTotalRows(Statement stmnt){
+
+        try{
+
+            System.out.println("Executing query...");
+            ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
+            System.out.println("Success!");
+            if(rs.next()){
+                totalRows = rs.getInt("count(message)");
+            }
+            System.out.println("Total rows: " + totalRows);
+
+        }catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+        }
+
+    }
 
     public void countAllMatches(Statement stmnt) {
 
-        while(total>0){
+        while(totalRows>0){
             try{
 
-                resultSet = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(numberOfLines));
+                resultSet = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(rowsPerQuery));
 
                 while (resultSet.next()){
 
@@ -42,8 +58,8 @@ public class Logic {
             }catch (SQLException ex){
                 System.out.println("SQLException in \"while\" cycle: " + ex.getMessage());
             }
-            done += numberOfLines;
-            System.out.println(numberOfLines + " rows done.");
+            done =+ rowsPerQuery;
+            System.out.println(done + " rows done.");
         }
 
     }
