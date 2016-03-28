@@ -16,6 +16,7 @@ public class Main {
         System.out.println("100% - Done!");
         System.out.println("Total match count = " + myLogic.getMatch());
 
+        connect.closeConnection();
     }
 
 }

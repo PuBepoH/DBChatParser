@@ -37,4 +37,13 @@ public class DbConnector {
         return stmnt;
     }
 
+    public void closeConnection() {
+        try{
+            stmnt.close();
+            connect.close();
+        }catch (SQLException ex){
+            System.out.println("SQLException in close connection method: " + ex.getMessage());
+        }
+    }
+
 }
