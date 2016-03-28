@@ -6,10 +6,10 @@ import java.util.regex.Pattern;
 
 public class Logic {
 
-    private int totalRows = 0, done = 0, match = 0, rowsPerQuery = 10000;
+    private int rowsTotal = 0, rowsDone = 0, matchCount = 0, rowsPerQuery = 100000;
     private String regex = ".*:peka:.*";
     private String message;
-    private final String query = "select message from mysql.chat_message LIMIT ";
+    private static final String query = "select message from mysql.chat_message LIMIT ";
     private Pattern pattern = Pattern.compile(regex);
     private Matcher matcher;
     private ResultSet resultSet;
@@ -22,9 +22,9 @@ public class Logic {
             ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
             System.out.println("Success!");
             if(rs.next()){
-                totalRows = rs.getInt("count(message)");
+                rowsTotal = rs.getInt("count(message)");
             }
-            System.out.println("Total rows: " + totalRows);
+            System.out.println("Total rows: " + rowsTotal);
 
         }catch(SQLException e){
             System.out.println("SQLException: " + e.getMessage());
@@ -34,10 +34,10 @@ public class Logic {
 
     public void countAllMatches(Statement stmnt) {
 
-        while(totalRows>0){
+        while(rowsTotal>0){
             try{
 
-                resultSet = stmnt.executeQuery(query + String.valueOf(done) + "," + String.valueOf(rowsPerQuery));
+                resultSet = stmnt.executeQuery(query + String.valueOf(rowsDone) + "," + String.valueOf(rowsPerQuery));
 
                 while (resultSet.next()){
 
@@ -46,7 +46,7 @@ public class Logic {
                             message = resultSet.getString("message");
                             matcher = pattern.matcher(message);
                             while (matcher.find()){
-                                match++;
+                                matchCount++;
                             }
                         }while (resultSet.next());
                     }catch (SQLException ex){
@@ -58,14 +58,14 @@ public class Logic {
             }catch (SQLException ex){
                 System.out.println("SQLException in \"while\" cycle: " + ex.getMessage());
             }
-            done =+ rowsPerQuery;
-            System.out.println(done + " rows done.");
+            rowsDone += rowsPerQuery;
+            System.out.println(rowsDone + " rows done.");
         }
 
     }
 
     public int getMatch(){
-        return match;
+        return matchCount;
     }
 
 }
