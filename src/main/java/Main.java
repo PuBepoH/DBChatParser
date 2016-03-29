@@ -10,7 +10,7 @@ public class Main {
 
         Logic myLogic = new Logic();
 
-        myLogic.getTotalRows(connect.getStmnt());
+        myLogic.makeTotalRows(connect.getStmnt());
         myLogic.countAllMatches(connect.getStmnt());
 
         System.out.println("100% - Done!");

@@ -14,7 +14,7 @@ public class Logic {
     private Matcher matcher;
     private ResultSet resultSet;
 
-    public void getTotalRows(Statement stmnt){
+    public void makeTotalRows(Statement stmnt){
 
         try{
 
