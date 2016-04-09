@@ -32,7 +32,10 @@ public class DbConnector {
         return stmnt;
     }
 
-    public void closeConnection() {
+
+    @Override
+    public void finalize() throws Throwable {
+        super.finalize();
         try{
             stmnt.close();
             connect.close();
