@@ -11,7 +11,6 @@ public class Main {
         DbConnector connect = new DbConnector();
         CountMatches myCountMatches = new CountMatches(connect.getStmnt());
 
-        myCountMatches.makeTotalRows();
         console.startConsole(myCountMatches);
         System.out.println("Program finished.");
     }

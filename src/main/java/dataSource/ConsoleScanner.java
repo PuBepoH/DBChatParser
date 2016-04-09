@@ -27,10 +27,6 @@ public class ConsoleScanner {
 
         scanIn.close();
 
-
     }
 
-    public String getStr() {
-        return str;
-    }
 }

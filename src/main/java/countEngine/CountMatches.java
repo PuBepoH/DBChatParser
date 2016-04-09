@@ -10,13 +10,14 @@ public class CountMatches {
 
     public CountMatches(Statement conStmnt){
         stmnt = conStmnt;
+        makeTotalRows();
     }
 
     private Statement stmnt;
-    private int rowsTotal = 0;
+    private int rowsTotal;
     private static final String query = "select message from mysql.chat_message LIMIT ";
 
-    public void makeTotalRows(){
+    private void makeTotalRows(){
 
         try{
 
@@ -27,18 +28,19 @@ public class CountMatches {
                 rowsTotal = rs.getInt("count(message)");
             }
             System.out.println("Total rows: " + rowsTotal);
-
+            stmnt.close();
         }catch(SQLException e){
             System.out.println("SQLException: " + e.getMessage());
         }
         System.out.println("Finished makeTotalRows");
+
     }
 
     public void countAllMatches(String regex) {
 
         System.out.println("Started countAllMatches");
 
-        int rowsPerQuery = 100000, rowsDone = 0, matchCount = 0;
+        int rowsPerQuery = 10, rowsDone = 0, matchCount = 0;
         ResultSet resultSet;
         Matcher match;
         Pattern pattern = Pattern.compile(regex);
@@ -66,9 +68,4 @@ public class CountMatches {
         System.out.println("Total " + regex + " match count = " + matchCount);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-
-    }
 }
