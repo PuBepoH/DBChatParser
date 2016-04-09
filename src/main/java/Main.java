@@ -11,7 +11,7 @@ public class Main {
         console.readConsole();
         DbConnector connect = new DbConnector();
         CountMatches myCountMatches = new CountMatches(connect.getStmnt());
-        //myCountMatches.makeTotalRows();
+        myCountMatches.makeTotalRows();
         myCountMatches.countAllMatches(":peka:");
         myCountMatches.countAllMatches(":grumpy:");
 
