@@ -10,10 +10,10 @@ public class Main {
         CountMatches myCountMatches = new CountMatches(connect.getStmnt());
 
         myCountMatches.makeTotalRows();
-        myCountMatches.countAllMatches();
 
-        System.out.println("100% - Done!");
-        System.out.println("Total match count = " + myCountMatches.getMatch());
+        myCountMatches.countAllMatches(":peka:");
+
+        myCountMatches.countAllMatches(":grumpy:");
 
         connect.closeConnection();
     }
