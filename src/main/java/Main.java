@@ -1,4 +1,5 @@
-
+import countEngine.Logic;
+import dataSource.DbConnector;
 
 public class Main {
 
@@ -6,12 +7,10 @@ public class Main {
 
         DbConnector connect = new DbConnector();
 
-        connect.makeConnection();
+        Logic myLogic = new Logic(connect.getStmnt());
 
-        Logic myLogic = new Logic();
-
-        myLogic.makeTotalRows(connect.getStmnt());
-        myLogic.countAllMatches(connect.getStmnt());
+        myLogic.makeTotalRows();
+        myLogic.countAllMatches();
 
         System.out.println("100% - Done!");
         System.out.println("Total match count = " + myLogic.getMatch());

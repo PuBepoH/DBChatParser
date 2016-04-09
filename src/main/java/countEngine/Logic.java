@@ -1,3 +1,5 @@
+package countEngine;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -6,15 +8,17 @@ import java.util.regex.Pattern;
 
 public class Logic {
 
-    private int rowsTotal = 0, rowsDone = 0, matchCount = 0, rowsPerQuery = 100000;
+    public Logic(Statement conStmnt){
+        stmnt = conStmnt;
+    }
+
+    private Statement stmnt;
+    private int rowsTotal = 0, rowsDone = 0, matchCount = 0;
     private String regex = ".*:peka:.*";
-    private String message;
     private static final String query = "select message from mysql.chat_message LIMIT ";
     private Pattern pattern = Pattern.compile(regex);
-    private Matcher matcher;
-    private ResultSet resultSet;
 
-    public void makeTotalRows(Statement stmnt){
+    public void makeTotalRows(){
 
         try{
 
@@ -32,7 +36,12 @@ public class Logic {
 
     }
 
-    public void countAllMatches(Statement stmnt) {
+    public void countAllMatches() {
+
+        int rowsPerQuery = 100000;
+        String message;
+        Matcher matcher;
+        ResultSet resultSet;
 
         while(rowsTotal>0){
             try{
@@ -50,7 +59,7 @@ public class Logic {
                             }
                         }while (resultSet.next());
                     }catch (SQLException ex){
-                        System.out.println("SQLException in Logic: " + ex.getMessage());
+                        System.out.println("SQLException in countEngine.Logic: " + ex.getMessage());
                     }
 
                 }
