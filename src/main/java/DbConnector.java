@@ -2,11 +2,7 @@ import java.sql.*;
 
 public class DbConnector {
 
-    private Statement stmnt = null;
-    private static final String url = "jdbc:mysql://localhost:3306/mysql", user = "root", password = "root";
-    private Connection connect = null;
-
-    public void makeConnection() {
+    public DbConnector() {
 
         System.out.println("Connecting to database...");
 
@@ -14,6 +10,7 @@ public class DbConnector {
 
             connect = DriverManager.getConnection(url, user, password);
             System.out.println("Success!");
+            stmnt = connect.createStatement();
 
         } catch (SQLException ex) {
 
@@ -24,14 +21,11 @@ public class DbConnector {
 
         }
 
-        try {
-            stmnt = connect.createStatement();
-        } catch (SQLException ex) {
-            System.out.println("SQLException in making statement: " + ex);
-        }
-
-
     }
+
+    private Statement stmnt = null;
+    private static final String url = "jdbc:mysql://localhost:3306/mysql", user = "root", password = "root";
+    private Connection connect = null;
 
     public Statement getStmnt() {
         return stmnt;
