@@ -39,6 +39,12 @@ public class ParsingRunner {
         }
         log.debug("Finished makeTotalRows");
 
+
+
+    }
+
+    public void start(){
+
         ArrayList<CountMatches> countMatchesList = new ArrayList<CountMatches>();
 
         for(int i = 0; i < expressions.length; i++) {
@@ -46,10 +52,6 @@ public class ParsingRunner {
         }
 
         countMatches = countMatchesList.toArray(new CountMatches[countMatchesList.size()]);
-
-    }
-
-    public void start(){
 
         for (CountMatches cMatch : countMatches) {
             cMatch.start();

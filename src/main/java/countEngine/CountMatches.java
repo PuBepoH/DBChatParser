@@ -21,6 +21,7 @@ public class CountMatches implements Runnable {
     private static final Logger log = Logger.getLogger(CountMatches.class);
 
     public CountMatches(Statement stmnt,String regex,String threadName,int totalRows) {
+
         this.totalRows = totalRows;
         this.stmnt = stmnt;
         this.regex = regex;
@@ -31,6 +32,10 @@ public class CountMatches implements Runnable {
 
         log.debug("Thread " + threadName + " started");
         log.debug("Total rows: " + totalRows);
+
+            if (stmnt != null){
+                log.info("STMNT OK");
+            }
 
         int rowsPerQuery = 1000000, rowsDone = 0;
         ResultSet resultSet;
