@@ -2,23 +2,26 @@ package dataSource;
 
 
 import countEngine.CountMatches;
+import org.apache.log4j.Logger;
 
 import java.util.Scanner;
 
 public class ConsoleScanner {
 
-    private String str = "";
+    private static final Logger log = Logger.getLogger(ConsoleScanner.class);
 
     public void startConsole(CountMatches countMatches){
 
         boolean more = true;
         Scanner scanIn = new Scanner(System.in);
+        String str;
 
         while (more){
-            System.out.println("Enter keyword to search:");
+            log.info("Enter keyword to search:");
             str = scanIn.nextLine();
-            countMatches.countAllMatches(str);
-            System.out.println("Do you want search another keyword? Type \"yes\" or \"y\" to search again.");
+            ParseResult prsRslt = countMatches.countAllMatches(str);
+            prsRslt.resultOut();
+            log.info("Do you want search another keyword? Type \"yes\" or \"y\" to search again.");
             str = scanIn.nextLine();
             if (!(str.equals("yes") || str.equals("y"))){
                 more = false;
