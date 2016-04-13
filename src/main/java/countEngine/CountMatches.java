@@ -1,5 +1,9 @@
 package countEngine;
 
+
+import dataSource.ParseResult;
+import org.apache.log4j.Logger;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,64 +12,61 @@ import java.util.regex.Pattern;
 
 public class CountMatches {
 
-    public CountMatches(Statement conStmnt){
+    private Statement stmnt;
+    private int rowsTotal;
+    private static final String query = "select message from mysql.chat_message LIMIT ";
+    private static final Logger log = Logger.getLogger(CountMatches.class);
+
+    public CountMatches(Statement conStmnt) {
         stmnt = conStmnt;
         makeTotalRows();
     }
 
-    private Statement stmnt;
-    private int rowsTotal;
-    private static final String query = "select message from mysql.chat_message LIMIT ";
+    private void makeTotalRows() {
 
-    private void makeTotalRows(){
+        try {
 
-        try{
-
-            System.out.println("Executing query...");
+            log.info("Executing query...");
             ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
             System.out.println("Success!");
-            if(rs.next()){
+            if (rs.next()) {
                 rowsTotal = rs.getInt("count(message)");
             }
-            System.out.println("Total rows: " + rowsTotal);
+            log.info("Total rows: " + rowsTotal);
             stmnt.close();
-        }catch(SQLException e){
-            System.out.println("SQLException: " + e.getMessage());
+        } catch (SQLException e) {
+            log.error("SQLException: " + e.getMessage());
         }
-        System.out.println("Finished makeTotalRows");
+        log.debug("Finished makeTotalRows");
 
     }
 
-    public void countAllMatches(String regex) {
+    public ParseResult countAllMatches(String regex) {
 
-        System.out.println("Started countAllMatches");
+        log.debug("Started countAllMatches");
 
         int rowsPerQuery = 10, rowsDone = 0, matchCount = 0;
         ResultSet resultSet;
         Matcher match;
         Pattern pattern = Pattern.compile(regex);
 
-        while(rowsTotal>rowsDone){
-            try{
+        while (rowsTotal > rowsDone) {
+            try {
                 resultSet = stmnt.executeQuery(query + String.valueOf(rowsDone) + "," + String.valueOf(rowsPerQuery));
-                while (resultSet.next()){
-                    try{
-                        match = pattern.matcher(resultSet.getString("message"));
-                        while (match.find()){
-                            matchCount++;
-                        }
-                    }catch (SQLException ex){
-                        System.out.println("SQLException in countEngine.CountMatches: " + ex.getMessage());
+                while (resultSet.next()) {
+                    match = pattern.matcher(resultSet.getString("message"));
+                    while (match.find()) {
+                        matchCount++;
                     }
                 }
-            }catch (SQLException ex){
-                System.out.println("SQLException in \"while\" cycle: " + ex.getMessage());
+            } catch (SQLException ex) {
+                log.error("SQLException in \"while\" cycle: " + ex.getMessage());
             }
             rowsDone += rowsPerQuery;
-            System.out.println(rowsDone + " rows done.");
+            log.info(rowsDone + " rows done.");
         }
-        System.out.println("100% - Done!");
-        System.out.println("Total " + regex + " match count = " + matchCount);
+
+        return new ParseResult(regex, matchCount);
     }
 
 }
