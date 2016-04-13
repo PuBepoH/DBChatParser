@@ -1,4 +1,4 @@
-import countEngine.CountMatches;
+import countEngine.ParsingRunner;
 import dataSource.ConsoleScanner;
 import dataSource.DbConnector;
 import org.apache.log4j.Logger;
@@ -10,11 +10,14 @@ public class Main {
 
     public static void main(String[] args){
 
+
         ConsoleScanner console = new ConsoleScanner();
         DbConnector connect = new DbConnector();
-        CountMatches myCountMatches = new CountMatches(connect.getStmnt());
+        ParsingRunner prsRun = new ParsingRunner(console,connect.getStmnt());
+        prsRun.start();
 
-        console.startConsole(myCountMatches);
+
+
         log.debug("Program finished.");
     }
 

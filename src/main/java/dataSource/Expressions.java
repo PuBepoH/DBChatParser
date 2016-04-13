@@ -21,4 +21,8 @@ public class Expressions {
         this.matchCount = matchCount;
     }
 
+    public String getRegex() {
+        return regex;
+    }
+
 }

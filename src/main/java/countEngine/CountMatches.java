@@ -1,7 +1,6 @@
 package countEngine;
 
 
-import dataSource.ParseResult;
 import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
@@ -10,15 +9,21 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CountMatches {
+public class CountMatches implements Runnable {
 
+
+    private Thread thread;
     private Statement stmnt;
     private int rowsTotal;
+    private int matchCount = 0;
+    private String regex, threadName;
     private static final String query = "select message from mysql.chat_message LIMIT ";
     private static final Logger log = Logger.getLogger(CountMatches.class);
 
-    public CountMatches(Statement conStmnt) {
-        stmnt = conStmnt;
+    public CountMatches(Statement stmnt,String regex,String threadName) {
+        this.stmnt = stmnt;
+        this.regex = regex;
+        this.threadName = threadName;
         makeTotalRows();
     }
 
@@ -41,11 +46,11 @@ public class CountMatches {
 
     }
 
-    public ParseResult countAllMatches(String regex) {
+    public void run() {
 
         log.debug("Started countAllMatches");
 
-        int rowsPerQuery = 10, rowsDone = 0, matchCount = 0;
+        int rowsPerQuery = 10, rowsDone = 0;
         ResultSet resultSet;
         Matcher match;
         Pattern pattern = Pattern.compile(regex);
@@ -66,7 +71,17 @@ public class CountMatches {
             log.info(rowsDone + " rows done.");
         }
 
-        return new ParseResult(regex, matchCount);
+
     }
 
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this, threadName);
+            thread.start();
+        }
+    }
+
+    public int getMatchCount() {
+        return matchCount;
+    }
 }

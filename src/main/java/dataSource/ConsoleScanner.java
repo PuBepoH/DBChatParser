@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class ConsoleScanner {
     
-    Scanner scanIn = new Scanner(System.in);
+    private Scanner scanIn = new Scanner(System.in);
 
     private static final Logger log = Logger.getLogger(ConsoleScanner.class);
 
@@ -29,7 +29,6 @@ public class ConsoleScanner {
                 more = false;
             }
         }
-
         return expressionsList.toArray(new Expressions[expressionsList.size()]);
     }
 

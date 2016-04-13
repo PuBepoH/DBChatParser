@@ -9,7 +9,7 @@ public class DbConnector {
     private Statement stmnt = null;
     private Connection connect = null;
     private static final String url = "jdbc:mysql://localhost:3306/mysql", user = "root", password = "root";
-    private static Logger log = Logger.getLogger(ParseResult.class);
+    private static Logger log = Logger.getLogger(Expressions.class);
 
     public DbConnector() {
 
