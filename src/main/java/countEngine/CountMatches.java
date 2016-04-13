@@ -14,48 +14,30 @@ public class CountMatches implements Runnable {
 
     private Thread thread;
     private Statement stmnt;
-    private int rowsTotal;
+    private int totalRows;
     private int matchCount = 0;
     private String regex, threadName;
     private static final String query = "select message from mysql.chat_message LIMIT ";
     private static final Logger log = Logger.getLogger(CountMatches.class);
 
-    public CountMatches(Statement stmnt,String regex,String threadName) {
+    public CountMatches(Statement stmnt,String regex,String threadName,int totalRows) {
+        this.totalRows = totalRows;
         this.stmnt = stmnt;
         this.regex = regex;
         this.threadName = threadName;
-        makeTotalRows();
-    }
-
-    private void makeTotalRows() {
-
-        try {
-
-            log.info("Executing query...");
-            ResultSet rs = stmnt.executeQuery("select count(message) from mysql.chat_message");
-            System.out.println("Success!");
-            if (rs.next()) {
-                rowsTotal = rs.getInt("count(message)");
-            }
-            log.info("Total rows: " + rowsTotal);
-            stmnt.close();
-        } catch (SQLException e) {
-            log.error("SQLException: " + e.getMessage());
-        }
-        log.debug("Finished makeTotalRows");
-
     }
 
     public void run() {
 
-        log.debug("Started countAllMatches");
+        log.debug("Thread " + threadName + " started");
+        log.debug("Total rows: " + totalRows);
 
-        int rowsPerQuery = 10, rowsDone = 0;
+        int rowsPerQuery = 1000000, rowsDone = 0;
         ResultSet resultSet;
         Matcher match;
         Pattern pattern = Pattern.compile(regex);
 
-        while (rowsTotal > rowsDone) {
+        while (totalRows > rowsDone) {
             try {
                 resultSet = stmnt.executeQuery(query + String.valueOf(rowsDone) + "," + String.valueOf(rowsPerQuery));
                 while (resultSet.next()) {
@@ -68,7 +50,7 @@ public class CountMatches implements Runnable {
                 log.error("SQLException in \"while\" cycle: " + ex.getMessage());
             }
             rowsDone += rowsPerQuery;
-            log.info(rowsDone + " rows done.");
+            log.info(threadName + " " + rowsDone + " rows done.");
         }
 
 
