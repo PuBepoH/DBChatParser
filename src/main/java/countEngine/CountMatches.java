@@ -1,6 +1,7 @@
 package countEngine;
 
 
+import dataSource.Expressions;
 import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
@@ -11,60 +12,60 @@ import java.util.regex.Pattern;
 
 public class CountMatches implements Runnable {
 
-
+    private int totalRows, matchCount, threadNumber;
     private Thread thread;
+    private Pattern pattern;
     private Statement stmnt;
-    private int totalRows;
-    private int matchCount = 0;
-    private String regex, threadName;
-    private static final String query = "select message from mysql.chat_message LIMIT ";
+    private ResultSet resultSet;
+    private Expressions[] expressions;
+    private String threadName;
     private static final Logger log = Logger.getLogger(CountMatches.class);
 
     public CountMatches(Statement stmnt,String regex,String threadName,int totalRows) {
 
         this.totalRows = totalRows;
         this.stmnt = stmnt;
-        this.regex = regex;
         this.threadName = threadName;
     }
 
     public void run() {
 
-        log.debug("Thread " + threadName + " started");
-        log.debug("Total rows: " + totalRows);
-
-            if (stmnt != null){
-                log.info("STMNT OK");
-            }
-
-        int rowsPerQuery = 1000000, rowsDone = 0;
-        ResultSet resultSet;
         Matcher match;
-        Pattern pattern = Pattern.compile(regex);
+        matchCount = 0;
 
-        while (totalRows > rowsDone) {
-            try {
-                resultSet = stmnt.executeQuery(query + String.valueOf(rowsDone) + "," + String.valueOf(rowsPerQuery));
-                while (resultSet.next()) {
-                    match = pattern.matcher(resultSet.getString("message"));
-                    while (match.find()) {
-                        matchCount++;
-                    }
-                }
-            } catch (SQLException ex) {
-                log.error("SQLException in \"while\" cycle: " + ex.getMessage());
+        log.debug("Thread " + threadName + " started, Total rows: " + totalRows);
+            resultSet.close();
+            if (stmnt != null) {
+                log.info("STMNT OK in thread " + threadNumber);
             }
-            rowsDone += rowsPerQuery;
-            log.info(threadName + " " + rowsDone + " rows done.");
-        }
+            if (resultSet != null) {
+                log.info("resultSet OK in thread " + threadNumber);
+            }
 
+        try {
+            while (resultSet.next()) {
+                match = pattern.matcher(resultSet.getString("message"));
+                while (match.find()) {
+                    matchCount++;
+                }
+            }
+        } catch (SQLException ex) {
+            log.error("SQLExceptoin in CountMatch cycle" + ex.getMessage());
+        }
+        expressions[threadNumber].addMatchCount(matchCount);
+
+        log.info("Added " + matchCount + " matches for " + pattern.toString() + "in thread " + threadNumber);
 
     }
 
-    public void start() {
+    public void start(ResultSet resultSet, Pattern pattern, int threadNumber, Expressions[] expressions) {
         if (thread == null) {
             thread = new Thread(this, threadName);
             thread.start();
+            this.resultSet = resultSet;
+            this.pattern = pattern;
+            this.threadNumber = threadNumber;
+            this.expressions = expressions;
         }
     }
 

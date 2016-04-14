@@ -13,11 +13,13 @@ import java.util.ArrayList;
 
 public class ParsingRunner {
 
-    private int totalRows;
+    private int totalRows, doneRows;
     private Statement stmnt;
     private Expressions[] expressions;
     private CountMatches[] countMatches;
+
     private static Logger log = Logger.getLogger(ParsingRunner.class);
+    private static final String query = "select message from mysql.chat_message LIMIT ";
 
     public ParsingRunner(ConsoleScanner consoleScanner,Statement stmnt) {
 
@@ -45,21 +47,36 @@ public class ParsingRunner {
 
     public void start(){
 
+        ResultSet resultSet;
+
+        int rowsPerQuery = 5000000;
+
         ArrayList<CountMatches> countMatchesList = new ArrayList<CountMatches>();
 
         for(int i = 0; i < expressions.length; i++) {
-            countMatchesList.add(new CountMatches(stmnt,expressions[i].getRegex(),"Thread " + i,totalRows));
+            countMatchesList.add(new CountMatches(stmnt,expressions[i].getPattern().toString(),"Thread " + i,totalRows));
         }
-
         countMatches = countMatchesList.toArray(new CountMatches[countMatchesList.size()]);
+    /////////////////////////////////
+        while (totalRows > doneRows) {
+            try {
+                resultSet = stmnt.executeQuery(query + String.valueOf(doneRows) + "," + String.valueOf(rowsPerQuery));
 
-        for (CountMatches cMatch : countMatches) {
-            cMatch.start();
-            log.debug("Starting new thread");
+                for (int threadNumber = 0; threadNumber < countMatches.length; threadNumber++) {
+                    countMatches[threadNumber].start(resultSet,expressions[threadNumber].getPattern(),threadNumber,expressions);
+                    log.debug("Starting new thread");
+                }
+            } catch (SQLException ex) {
+                log.error("SQLException in \"while\" cycle: " + ex.getMessage());
+            }
+            doneRows += rowsPerQuery;
+
         }
+    ////////////////////////////////
+
 
         for (int i = 0; i < countMatches.length; i++) {
-            expressions[i].setMatchCount(countMatches[i].getMatchCount());
+            expressions[i].addMatchCount(countMatches[i].getMatchCount());
             expressions[i].resultOut();
         }
 
